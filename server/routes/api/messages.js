@@ -22,7 +22,7 @@ router.post("/", async (req, res, next) => {
         recipientId
       );
 
-      if (senderId === conversation.user1Id || senderId === conversation.user2Id) {
+      if (conversation.id === conversationId) {
         const message = await Message.create({ senderId, text, conversationId });
         return res.json({ message, sender });
       }
