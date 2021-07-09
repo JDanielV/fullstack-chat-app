@@ -2,6 +2,7 @@ const router = require("express").Router();
 const { User, Conversation, Message } = require("../../db/models");
 const { Op } = require("sequelize");
 const onlineUsers = require("../../onlineUsers");
+const db = require("../../db/db");
 
 // get all conversations for a user, include latest message text for preview, and all messages
 // include other user model so we have info on username/profile pic (don't include current user info)
@@ -20,9 +21,13 @@ router.get("/", async (req, res, next) => {
         }
       },
       attributes: ["id"],
-      order: [[Message, "createdAt", "ASC"]],
+
+      group: ['conversation.id', 'messages.id', "user1.id", "user2.id"],
+
+      // order: [[Message, "createdAt", "ASC"]],
+      order: [[db.fn('max', db.col('messages.createdAt')), 'DESC']],
       include: [
-        { model: Message, order: ["createdAt", "ASC"] },
+        { model: Message },
         {
           model: User,
           as: "user1",
@@ -51,6 +56,9 @@ router.get("/", async (req, res, next) => {
     for (let i = 0; i < conversations.length; i++) {
       const convo = conversations[i];
       const convoJSON = convo.toJSON();
+
+      // revert messages array so that most recent messages display first
+      convoJSON.messages.reverse();
 
       // set a property "otherUser" so that frontend will have easier access
       if (convoJSON.user1) {
