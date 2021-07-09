@@ -54,7 +54,8 @@ router.get("/", async (req, res, next) => {
       const convo = conversations[i];
       const convoJSON = convo.toJSON();
 
-      // revert messages array so that most recent messages display first
+      // revert messages array so that most recent messages get placed at
+      // the end of the array, appearing at the bottom of convo
       convoJSON.messages.reverse();
 
       // set a property "otherUser" so that frontend will have easier access
