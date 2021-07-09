@@ -17,7 +17,7 @@ router.get("/", async (req, res, next) => {
         [Op.or]: {
           user1Id: userId,
           user2Id: userId,
-        },
+        }
       },
       attributes: ["id"],
       order: [[Message, "createdAt", "ASC"]],
@@ -69,7 +69,7 @@ router.get("/", async (req, res, next) => {
       }
 
       // set properties for notification count and latest message preview
-      convoJSON.latestMessageText = convoJSON.messages[0].text;
+      convoJSON.latestMessageText = convoJSON.messages[convoJSON.messages.length - 1].text;
       conversations[i] = convoJSON;
     }
 
