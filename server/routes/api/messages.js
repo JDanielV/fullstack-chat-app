@@ -23,7 +23,7 @@ router.post("/", async (req, res, next) => {
       );
 
       if (conversation.id === conversationId) {
-        const message = await Message.create({ senderId, text, conversationId });
+        const message = await Message.create({ senderId, text, conversationId, readByRecipient: false });
         return res.json({ message, sender });
       }
       else {
@@ -50,9 +50,44 @@ router.post("/", async (req, res, next) => {
     const message = await Message.create({
       senderId,
       text,
+      readByRecipient: false,
       conversationId: conversation.id,
     });
     res.json({ message, sender });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// updates messages from unread to read, if message exists and is unread
+router.put("/", async (req, res, next) => {
+
+  try {
+    if (!req.user) {
+      return res.sendStatus(401);
+    }
+
+    const { id, senderId, readByRecipient } = req.body;
+
+    // confirm message exists by finding it
+    let message = await Message.findOne({
+      where: { id, senderId }
+    });
+
+    // perform update operation if message is found & unread
+    if (message && !message.readByRecipient) {
+      Message.update({
+        readByRecipient: readByRecipient
+      },
+        {
+          where: { id, senderId }
+        })
+      return res.json({ message });
+    }
+    else {
+      return res.sendStatus(403);
+    }
+
   } catch (error) {
     next(error);
   }

@@ -83,6 +83,12 @@ const saveMessage = async (body) => {
   return data;
 };
 
+// message format to send (to update existing message): {recipientId, text, conversationId, readByRecipient}
+export const updateMessage = async (body) => {
+  const { data } = await axios.put("/api/messages", body);
+  return data;
+}
+
 const sendMessage = (data, body) => {
   socket.emit("new-message", {
     message: data.message,
