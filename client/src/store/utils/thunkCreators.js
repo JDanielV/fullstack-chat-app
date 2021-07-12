@@ -120,7 +120,6 @@ export const updateStoreMessages = (body) => async (dispatch) => {
   try {
     const data = await updateMessage(body);
 
-    console.log("DATA BACK FROM THE SERVER", data);
     dispatch(updateMessagesToRead(data));
   } catch (error) {
     console.log(error);

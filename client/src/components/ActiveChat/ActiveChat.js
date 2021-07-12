@@ -32,7 +32,6 @@ const ActiveChat = (props) => {
       readByRecipient: true
     }
     props.updateStoreMessages(newMessage);
-    console.log("FUNCTION TRIGGERED");
   };
 
   useEffect(() => {
