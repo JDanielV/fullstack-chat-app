@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Box } from "@material-ui/core";
 import { Input, Header, Messages } from "./index";
 import { connect } from "react-redux";
-import { updateMessage } from "../../store/utils/thunkCreators";
+import { updateStoreMessages } from "../../store/utils/thunkCreators";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -27,22 +27,23 @@ const ActiveChat = (props) => {
   const conversation = props.conversation || {};
 
   const markMessageAsRead = (message) => {
-    if (!message.readByRecipient && user.id !== message.senderId) {
-      const newMessage = {
-        ...message,
-        readByRecipient: true
-      }
-      updateMessage(newMessage);
+    const newMessage = {
+      ...message,
+      readByRecipient: true
     }
+    props.updateStoreMessages(newMessage);
+    console.log("FUNCTION TRIGGERED");
   };
 
   useEffect(() => {
     if (conversation.messages) {
       for (let i = 0; i < conversation.messages.length; i++) {
-        markMessageAsRead(conversation.messages[i]);
+        if (!conversation.messages[i].readByRecipient && user.id !== conversation.messages[i].senderId) {
+          markMessageAsRead(conversation.messages[i]);
+        }
       }
     }
-  }, [conversation.messages])
+  }, [conversation.messages, user.id])
 
   return (
     <Box className={classes.root}>
@@ -81,4 +82,12 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, null)(ActiveChat);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    updateStoreMessages: (message) => {
+      dispatch(updateStoreMessages(message));
+    },
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps, null)(ActiveChat);

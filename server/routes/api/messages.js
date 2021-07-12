@@ -82,7 +82,8 @@ router.put("/", async (req, res, next) => {
         {
           where: { id, senderId }
         })
-      return res.json({ message });
+      message.readByRecipient = readByRecipient;
+      return res.json(message);
     }
     else {
       return res.sendStatus(403);
