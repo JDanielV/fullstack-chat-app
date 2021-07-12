@@ -20,6 +20,7 @@ const styles = {
 };
 
 class Chat extends Component {
+
   handleClick = async (conversation) => {
     await this.props.setActiveChat(conversation.otherUser.username);
   };
@@ -38,11 +39,17 @@ class Chat extends Component {
           online={otherUser.online}
           sidebar={true}
         />
-        <ChatContent conversation={this.props.conversation} />
+        <ChatContent conversation={this.props.conversation} activeConversation={this.props.activeConversation} />
       </Box>
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    activeConversation: state.activeConversation
+  };
+};
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -52,4 +59,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(null, mapDispatchToProps)(withStyles(styles)(Chat));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Chat));

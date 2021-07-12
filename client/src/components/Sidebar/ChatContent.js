@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { connect } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -18,9 +19,15 @@ const useStyles = makeStyles((theme) => ({
     color: "#9CADC8",
     letterSpacing: -0.17,
   },
+  notificationWrapper: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  },
   notification: {
     height: 20,
-    width: 20,
+    width: "fitContent",
+    padding: 7,
     backgroundColor: "#3F92FF",
     marginRight: 10,
     color: "white",
@@ -32,12 +39,17 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     borderRadius: 10,
   },
+  notificationText: {
+    fontSize: 12,
+    fontWeight: 600
+  }
 }));
 
 const ChatContent = (props) => {
   const classes = useStyles();
 
-  const { conversation } = props;
+  const { conversation, activeConversation } = props;
+  let unreadMessagesCount = conversation.messages.filter(message => !message.readByRecipient).length;
   const { latestMessageText, otherUser } = conversation;
 
   return (
@@ -50,6 +62,15 @@ const ChatContent = (props) => {
           {latestMessageText}
         </Typography>
       </Box>
+      {unreadMessagesCount > 0 && activeConversation !== conversation.otherUser.username &&
+        <Box className={classes.notificationWrapper}>
+          <Box className={classes.notification}>
+            <Typography className={classes.notificationText}>
+              {unreadMessagesCount}
+            </Typography>
+          </Box>
+        </Box>
+      }
     </Box>
   );
 };
