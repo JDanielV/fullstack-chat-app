@@ -35,6 +35,7 @@ const ActiveChat = (props) => {
   };
 
   useEffect(() => {
+    console.log("useEffect triggered");
     if (conversation.messages) {
       for (let i = 0; i < conversation.messages.length; i++) {
         if (!conversation.messages[i].readByRecipient && user.id !== conversation.messages[i].senderId) {
@@ -42,7 +43,7 @@ const ActiveChat = (props) => {
         }
       }
     }
-  }, [conversation.messages, user.id])
+  }, [conversation, user.id])
 
   return (
     <Box className={classes.root}>
