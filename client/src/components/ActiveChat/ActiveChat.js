@@ -35,7 +35,6 @@ const ActiveChat = (props) => {
   };
 
   useEffect(() => {
-    console.log("useEffect triggered");
     if (conversation.messages) {
       for (let i = 0; i < conversation.messages.length; i++) {
         if (!conversation.messages[i].readByRecipient && user.id !== conversation.messages[i].senderId) {
