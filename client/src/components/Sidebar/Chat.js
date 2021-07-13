@@ -39,7 +39,7 @@ class Chat extends Component {
           online={otherUser.online}
           sidebar={true}
         />
-        <ChatContent conversation={this.props.conversation} activeConversation={this.props.activeConversation} />
+        <ChatContent conversation={this.props.conversation} activeConversation={this.props.activeConversation} userId={this.props.user.id} />
       </Box>
     );
   }
@@ -47,7 +47,8 @@ class Chat extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    activeConversation: state.activeConversation
+    activeConversation: state.activeConversation,
+    user: state.user
   };
 };
 

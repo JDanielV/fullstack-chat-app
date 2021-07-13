@@ -48,8 +48,12 @@ const useStyles = makeStyles((theme) => ({
 const ChatContent = (props) => {
   const classes = useStyles();
 
-  const { conversation, activeConversation } = props;
-  let unreadMessagesCount = conversation.messages.filter(message => !message.readByRecipient).length;
+  const { conversation, activeConversation, userId } = props;
+
+  let unreadMessagesCount = conversation.messages.filter(message => !message.readByRecipient && message.senderId !== userId).length;
+
+  // let unreadMessagesCount = unreadMessages.filter(message => message.senderId !== userId).length;
+
   const { latestMessageText, otherUser } = conversation;
 
   return (

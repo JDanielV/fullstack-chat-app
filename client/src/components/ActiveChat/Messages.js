@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Box } from "@material-ui/core";
 import { SenderBubble, OtherUserBubble } from "../ActiveChat";
 import moment from "moment";
@@ -6,13 +6,21 @@ import moment from "moment";
 const Messages = (props) => {
   const { messages, otherUser, userId } = props;
 
+  const [lastSentReadMessage, setLastSentReadMessage] = useState(undefined);
+
+  useEffect(() => {
+    setLastSentReadMessage(messages.filter(message => message.senderId === userId && message.readByRecipient).slice(-1)[0])
+
+  }, [messages]);
+
   return (
     <Box>
       {messages.map((message) => {
         const time = moment(message.createdAt).format("h:mm");
 
+
         return message.senderId === userId ? (
-          <SenderBubble key={message.id} text={message.text} time={time} />
+          <SenderBubble key={message.id} messageId={message.id} text={message.text} time={time} otherUser={otherUser} lastSentReadMessage={lastSentReadMessage} />
         ) : (
           <OtherUserBubble key={message.id} text={message.text} time={time} otherUser={otherUser} />
         );
