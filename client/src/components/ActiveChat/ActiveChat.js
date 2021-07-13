@@ -3,7 +3,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Box } from "@material-ui/core";
 import { Input, Header, Messages } from "./index";
 import { connect } from "react-redux";
-import { updateStoreMessages } from "../../store/utils/thunkCreators";
+import { updateStoreMessages, fetchConversations } from "../../store/utils/thunkCreators";
+
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -23,7 +24,7 @@ const useStyles = makeStyles(() => ({
 
 const ActiveChat = (props) => {
   const classes = useStyles();
-  const { user } = props;
+  const { user, fetchConversations } = props;
   const conversation = props.conversation || {};
 
   const markMessageAsRead = (message) => {
@@ -42,7 +43,19 @@ const ActiveChat = (props) => {
         }
       }
     }
+
+    const interval = setInterval(() => {
+      if (conversation.id) {
+        fetchConversations();
+      }
+    }, 7000);
+
+
+    return () => {
+      clearInterval(interval);
+    }
   }, [conversation, user.id])
+
 
   return (
     <Box className={classes.root}>
@@ -85,6 +98,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     updateStoreMessages: (message) => {
       dispatch(updateStoreMessages(message));
+    },
+    fetchConversations: () => {
+      dispatch(fetchConversations());
     },
   };
 };

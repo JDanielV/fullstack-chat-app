@@ -15,8 +15,6 @@ router.post("/", async (req, res, next) => {
     // if we already know conversation id, we can save time and just add it to message and return
     if (conversationId) {
 
-      // however, we do need to check if the sender of the message (senderId) is actually
-      // one of the users in the conversation (user1Id or user2Id)
       let conversation = await Conversation.findConversation(
         senderId,
         recipientId
