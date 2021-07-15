@@ -58,7 +58,7 @@ router.post("/", async (req, res, next) => {
 });
 
 // updates messages from unread to read, if message exists and is unread
-router.put("/", async (req, res, next) => {
+router.put("/update", async (req, res, next) => {
 
   try {
     if (!req.user) {
@@ -67,25 +67,21 @@ router.put("/", async (req, res, next) => {
 
     const { id, senderId, readByRecipient } = req.body;
 
-    // confirm message exists by finding it
-    let message = await Message.findOne({
-      where: { id, senderId }
-    });
-
     // perform update operation if message is found & unread
-    if (message && !message.readByRecipient) {
-      Message.update({
-        readByRecipient: readByRecipient
-      },
-        {
-          where: { id, senderId }
-        })
-      message.readByRecipient = readByRecipient;
-      return res.json(message);
-    }
-    else {
-      return res.sendStatus(403);
-    }
+    const message = await Message.update({
+      readByRecipient: readByRecipient
+    },
+      {
+        where: {
+          id,
+          senderId,
+          readByRecipient: false
+        },
+        returning: true,
+        plain: true
+      })
+
+    return res.json(message[1]);
 
   } catch (error) {
     next(error);

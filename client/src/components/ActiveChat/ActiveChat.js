@@ -44,16 +44,16 @@ const ActiveChat = (props) => {
       }
     }
 
-    const interval = setInterval(() => {
-      if (conversation.id) {
-        fetchConversations();
-      }
-    }, 7000);
+    // const interval = setInterval(() => {
+    //   if (conversation.id) {
+    //     fetchConversations();
+    //   }
+    // }, 7000);
 
 
-    return () => {
-      clearInterval(interval);
-    }
+    // return () => {
+    //   clearInterval(interval);
+    // }
   }, [conversation, user.id])
 
 
