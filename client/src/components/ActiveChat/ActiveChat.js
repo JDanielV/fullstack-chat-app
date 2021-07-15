@@ -27,22 +27,20 @@ const ActiveChat = (props) => {
   const { user, fetchConversations } = props;
   const conversation = props.conversation || {};
 
-  const markMessageAsRead = (message) => {
-    const newMessage = {
-      ...message,
-      readByRecipient: true
+  const markAllUnreadMessagesAsRead = (message) => {
+    if (message) {
+      const reqBody = {
+        conversationId: message.conversationId
+      }
+      props.updateStoreMessages(reqBody);
     }
-    props.updateStoreMessages(newMessage);
   };
 
   useEffect(() => {
     if (conversation.messages) {
-      for (let i = 0; i < conversation.messages.length; i++) {
-        if (!conversation.messages[i].readByRecipient && user.id !== conversation.messages[i].senderId) {
-          markMessageAsRead(conversation.messages[i]);
-        }
-      }
+      markAllUnreadMessagesAsRead(conversation.messages.find(message => !message.readByRecipient && message.senderId !== user.id));
     }
+    // console.log("changed convo");
 
     // const interval = setInterval(() => {
     //   if (conversation.id) {
@@ -54,7 +52,7 @@ const ActiveChat = (props) => {
     // return () => {
     //   clearInterval(interval);
     // }
-  }, [conversation, user.id])
+  }, [conversation.id, user.id])
 
 
   return (

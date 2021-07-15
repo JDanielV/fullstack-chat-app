@@ -86,8 +86,9 @@ const saveMessage = async (body) => {
 
 // message format to send (to update existing message): {recipientId, text, conversationId, readByRecipient}
 const updateMessage = async (body) => {
+  console.log("BODY BEFORE REQQQ", body);
   const { data } = await axios.put("/api/messages/update", body);
-  console.log(data);
+
   return data;
 }
 
