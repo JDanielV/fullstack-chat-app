@@ -34,7 +34,7 @@ const ActiveChat = (props) => {
   const previousActiveConvo = previousActiveConvoRef.current;
 
   // Finds and updates unread messages in current and previous active conversations. 
-  // If any found, it updates all unread messages in both convos.
+  // If any found, it updates all unread messages as READ in both convos.
   const findAndUpdateUnreadMessages = () => {
     const unreadMessage = conversation.messages.find(message => !message.readByRecipient && message.senderId !== user.id);
     const previousConvoUnreadMessage = previousActiveConvo && previousActiveConvo.messages ?
