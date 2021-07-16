@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Box } from "@material-ui/core";
 import { Input, Header, Messages } from "./index";
@@ -26,32 +26,33 @@ const ActiveChat = (props) => {
   const classes = useStyles();
   const { user, fetchConversations } = props;
   const conversation = props.conversation || {};
+  const previousActiveConvoRef = useRef();
 
-  const markAllUnreadMessagesAsRead = (message) => {
-    if (message) {
-      const reqBody = {
-        conversationId: message.conversationId
-      }
-      props.updateStoreMessages(reqBody);
+  useEffect(() => {
+    previousActiveConvoRef.current = conversation;
+  });
+  const previousActiveConvo = previousActiveConvoRef.current;
+
+  // Finds and updates unread messages in current and previous active conversations. 
+  // If any found, it updates all unread messages in both convos.
+  const findAndUpdateUnreadMessages = () => {
+    const unreadMessage = conversation.messages.find(message => !message.readByRecipient && message.senderId !== user.id);
+    const previousConvoUnreadMessage = previousActiveConvo && previousActiveConvo.messages ?
+      previousActiveConvo.messages.find(message => !message.readByRecipient && message.senderId !== user.id) : null;
+
+    if (unreadMessage || previousConvoUnreadMessage) {
+      const arrayOfConvoIds = [];
+      unreadMessage && arrayOfConvoIds.push(unreadMessage.conversationId);
+      previousConvoUnreadMessage && arrayOfConvoIds.push(previousConvoUnreadMessage.conversationId);
+      props.updateStoreMessages(arrayOfConvoIds);
     }
-  };
+  }
 
   useEffect(() => {
     if (conversation.messages) {
-      markAllUnreadMessagesAsRead(conversation.messages.find(message => !message.readByRecipient && message.senderId !== user.id));
+      findAndUpdateUnreadMessages();
     }
-    // console.log("changed convo");
-
-    // const interval = setInterval(() => {
-    //   if (conversation.id) {
-    //     fetchConversations();
-    //   }
-    // }, 7000);
-
-
-    // return () => {
-    //   clearInterval(interval);
-    // }
+    fetchConversations();
   }, [conversation.id, user.id])
 
 

@@ -1,6 +1,10 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, createTheme } from "@material-ui/core/styles";
 import { Box, Typography, Avatar } from "@material-ui/core";
+
+const theme = createTheme({
+  spacing: 4,
+});
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -28,14 +32,14 @@ const useStyles = makeStyles(() => ({
   },
   readBubble: {
     position: 'absolute',
-    right: -40,
-    top: "12%"
+    right: theme.spacing(-10),
+    top: theme.spacing(1),
   },
   avatar: {
-    height: 20,
-    width: 20,
-    marginRight: 11,
-    marginTop: 6
+    height: theme.spacing(5),
+    width: theme.spacing(5),
+    marginRight: theme.spacing(3),
+    marginTop: theme.spacing(1.5)
   }
 }));
 

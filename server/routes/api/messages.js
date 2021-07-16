@@ -67,15 +67,14 @@ router.put("/update", async (req, res, next) => {
     }
     const userId = req.user.id;
 
-    const { conversationId } = req.body;
-
-    // perform update operation on messages that are unread
+    // perform update operation on messages that are unread in either
+    // current active conversation or previous active conversation
     const messages = await Message.update({
       readByRecipient: true
     },
       {
         where: {
-          conversationId: conversationId,
+          conversationId: req.body,
           [Op.not]: [{ senderId: userId }],
           readByRecipient: false
         },
