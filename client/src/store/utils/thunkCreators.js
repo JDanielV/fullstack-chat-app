@@ -96,7 +96,7 @@ const sendMessage = (data, body) => {
     message: data.message,
     recipientId: body.recipientId,
     sender: data.sender,
-  });
+  }, data.message.conversationId);
 };
 
 // message format to send: {recipientId, text, conversationId}

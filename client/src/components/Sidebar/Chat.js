@@ -4,6 +4,7 @@ import { BadgeAvatar, ChatContent } from "../Sidebar";
 import { withStyles } from "@material-ui/core/styles";
 import { setActiveChat } from "../../store/activeConversation";
 import { connect } from "react-redux";
+import socket from "../../socket";
 
 const styles = {
   root: {
@@ -23,6 +24,12 @@ class Chat extends Component {
 
   handleClick = async (conversation) => {
     await this.props.setActiveChat(conversation.otherUser.username);
+
+    socket.emit("join-room", {
+      userId: this.props.user.id,
+      username: this.props.user.username,
+      conversationId: conversation.id
+    });
   };
 
   render() {
