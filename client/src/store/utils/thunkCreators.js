@@ -91,6 +91,8 @@ const updateMessage = async (body) => {
   return data;
 }
 
+// Emits the new message along with the conversation ID
+// to be used as the room ID in the socket
 const sendMessage = (data, body) => {
   socket.emit("new-message", {
     message: data.message,

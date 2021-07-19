@@ -7,6 +7,7 @@ import { SidebarContainer } from "./Sidebar";
 import { ActiveChat } from "./ActiveChat";
 import { logout, fetchConversations } from "../store/utils/thunkCreators";
 import { clearOnLogout } from "../store/index";
+import socket from "../socket";
 
 const styles = {
   root: {
@@ -28,10 +29,26 @@ class Home extends Component {
         isLoggedIn: true,
       });
     }
+
+    // Updates the list of rooms to join if the number of convos
+    // changes (in case there's a new conversation)
+    if (this.props.conversations.length !== prevProps.conversations.length) {
+      const conversationIds = this.props.conversations.map((convo => convo.id));
+      socket.emit("join-rooms", {
+        conversationIds
+      });
+    }
   }
 
   componentDidMount() {
     this.props.fetchConversations();
+
+    // Joins the room of each existing conversation (for better
+    // performance and security in both client & server)
+    const conversationIds = this.props.conversations.map((convo => convo.id));
+    socket.emit("join-rooms", {
+      conversationIds
+    });
   }
 
   handleLogout = async () => {

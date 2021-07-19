@@ -11,7 +11,6 @@ const { app, sessionStore } = require("../app");
 const http = require("http");
 const db = require("../db");
 const onlineUsers = require("../onlineUsers");
-const { v4: uuidv4 } = require('uuid');
 
 /**
  * Get port from environment and store in Express.
@@ -33,8 +32,8 @@ const server = http.createServer(app);
 const io = require("socket.io")(server);
 
 io.on("connection", (socket) => {
-  socket.on("join-room", (userData) => {
-    socket.join(userData.conversationId);
+  socket.on("join-rooms", (userData) => {
+    socket.join(userData.conversationIds);
   });
 
   socket.on("go-online", (id) => {
@@ -45,12 +44,17 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("add-online-user", id);
   });
 
-  socket.on("new-message", (data, to) => {
-    console.log("DATA, TO", data, to);
-
-    socket.to(to).emit("receive-message", {
+  socket.on("new-message", (data, rooms) => {
+    // Sends the received message to the corresponding room/chat only
+    socket.to(rooms).emit("receive-message", {
       message: data.message,
       sender: data.sender,
+    });
+  });
+
+  socket.on("update-read-message", (message) => {
+    socket.to(message.conversationId).emit("receive-read-message", {
+      ...message,
     });
   });
 
@@ -62,30 +66,6 @@ io.on("connection", (socket) => {
     }
   });
 });
-
-// middleware to look for existing chat session
-// if not found, new session details are created
-// io.use((socket, next) => {
-//   const sessionId = socket.handshake.auth.sessionId;
-//   if (sessionId) {
-//     const session = sessionStore.findSession(sessionId);
-//     if (session) {
-//       socket.sessionId = sessionId;
-//       socket.userId = session.userId;
-//       socket.username = session.username;
-//       return next();
-//     }
-//   }
-//   const username = socket.handshake.auth.username;
-//   if (!username) {
-//     return next(new Error("Invalid username"));
-//   }
-//   // if not found, create session
-//   socket.sessionId = ("session-" + uuidv4());
-//   socket.userId = ("user-" + uuidv4());
-//   socket.username = username;
-//   next();
-// });
 
 sessionStore
   .sync()
