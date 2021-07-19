@@ -58,7 +58,7 @@ const ActiveChat = (props) => {
   }, [conversation.id, user.id])
 
   useEffect(() => {
-    if (conversation.messages &&
+    if (conversation.messages && conversation.messages.length > 0 &&
       conversation.messages[conversation.messages.length - 1].senderId !==
       user.id) {
       socket.emit("update-read-message", {
