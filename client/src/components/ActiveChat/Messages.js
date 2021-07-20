@@ -23,6 +23,12 @@ const Messages = (props) => {
     })
   }, [])
 
+  useEffect(() => {
+    setLastSentReadMessage(messages.filter(message =>
+      message.senderId === userId && message.readByRecipient).slice(-1)[0]);
+
+  }, [conversationId, messages, userId])
+
   return (
     <Box>
       {messages.map((message) => {

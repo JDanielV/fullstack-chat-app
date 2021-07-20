@@ -24,12 +24,21 @@ const Sidebar = (props) => {
   const conversations = props.conversations || [];
   const { handleChange, searchTerm } = props;
 
+  // Removes duplicates in convos array in the odd event there are any.
+  // Duplicate convos may show up (in the UI) when a new convo is just created.
+  const found = new Set();
+  const uniqueConvos = conversations.filter(convo => {
+    const duplicate = found.has(convo.id);
+    found.add(convo.id);
+    return !duplicate;
+  })
+
   return (
     <Box className={classes.root}>
       <CurrentUser />
       <Typography className={classes.title}>Chats</Typography>
       <Search handleChange={handleChange} />
-      {conversations
+      {uniqueConvos
         .filter((conversation) => conversation.otherUser.username.includes(searchTerm))
         .map((conversation) => {
           return <Chat conversation={conversation} key={conversation.otherUser.username} />;

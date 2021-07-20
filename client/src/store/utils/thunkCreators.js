@@ -91,14 +91,15 @@ const updateMessage = async (body) => {
   return data;
 }
 
-// Emits the new message along with the conversation ID
-// to be used as the room ID in the socket
+// Emits the new message along with the conversation ID to be used as the room ID in the socket. 
+// If new convo for the receiver, it sends the message to a room with ID
+// of the recepients' username, which the recipient already has joined by default. 
 const sendMessage = (data, body) => {
   socket.emit("new-message", {
     message: data.message,
     recipientId: body.recipientId,
     sender: data.sender,
-  }, data.message.conversationId);
+  }, body.conversationId ? body.conversationId : body.recipientUsername);
 };
 
 // message format to send: {recipientId, text, conversationId}

@@ -35,7 +35,7 @@ class Home extends Component {
     if (this.props.conversations.length !== prevProps.conversations.length) {
       const conversationIds = this.props.conversations.map((convo => convo.id));
       socket.emit("join-rooms", {
-        conversationIds
+        rooms: [...conversationIds, this.props.user.username]
       });
     }
   }
@@ -47,7 +47,7 @@ class Home extends Component {
     // performance and security in both client & server)
     const conversationIds = this.props.conversations.map((convo => convo.id));
     socket.emit("join-rooms", {
-      conversationIds
+      rooms: [...conversationIds, this.props.user.username]
     });
   }
 
