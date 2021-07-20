@@ -10,7 +10,9 @@ require("dotenv").config();
 const { app, sessionStore } = require("../app");
 const http = require("http");
 const db = require("../db");
+const { User } = require("../db/models");
 const onlineUsers = require("../onlineUsers");
+const jwt = require("jsonwebtoken");
 
 /**
  * Get port from environment and store in Express.
@@ -31,20 +33,28 @@ const server = http.createServer(app);
 
 const io = require("socket.io")(server);
 
-const validateToken = (token) => {
-  if (token === "secret-token") {
-    return true
-  }
-  else
-    return false
-}
-
-// Quick client authentication middleware
+// Client authentication middleware
 io.use((socket, next) => {
   const token = socket.handshake.auth.token;
-  if (validateToken(token))
-    return next();
-  return next(new Error('Authentication failed'));
+  if (token) {
+    jwt.verify(token, process.env.SESSION_SECRET, async (err, decoded) => {
+      if (err) {
+        return err;
+      }
+      const user = await User.findOne({
+        where: { id: decoded.id },
+      });
+
+      if (user) {
+        console.log("SUCCESS!!!", user)
+        return next();
+      }
+      else {
+        console.log("FAILED!!!")
+        return next(new Error('Authentication failed'))
+      }
+    });
+  }
 })
 
 io.on("connection", (socket) => {
