@@ -1,13 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Box } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import { SenderBubble, OtherUserBubble } from "../ActiveChat";
 import moment from "moment";
 import socket from "../../socket";
 
-const Messages = (props) => {
-  const { messages, otherUser, userId, conversationId } = props;
+const useStyles = makeStyles(() => ({
+  root: {
+    height: "85%",
+    maxHeight: "85%",
+    overflowY: "scroll",
+    overflowX: "hidden",
+    paddingRight: 41
+  }
+}));
 
+const Messages = (props) => {
+  const classes = useStyles();
+  const { messages, otherUser, userId, conversationId } = props;
   const [lastSentReadMessage, setLastSentReadMessage] = useState(undefined);
+
+  const setRef = useCallback(node => {
+    if (node) {
+      console.log("NODE!!", node);
+      node.scrollIntoView({ smooth: true })
+    }
+  }, [])
 
   useEffect(() => {
     setLastSentReadMessage(messages.filter(message =>
@@ -30,15 +48,15 @@ const Messages = (props) => {
   }, [conversationId, messages, userId])
 
   return (
-    <Box>
-      {messages.map((message) => {
+    <Box className={classes.root}>
+      {messages.map((message, index) => {
         const time = moment(message.createdAt).format("h:mm");
-
+        const isLastMessage = messages.length - 1 === index;
 
         return message.senderId === userId ? (
-          <SenderBubble key={message.id} messageId={message.id} text={message.text} time={time} otherUser={otherUser} lastSentReadMessage={lastSentReadMessage} />
+          <SenderBubble isLastMessage={isLastMessage} setRef={setRef} key={index} messageId={message.id} text={message.text} time={time} otherUser={otherUser} lastSentReadMessage={lastSentReadMessage} />
         ) : (
-          <OtherUserBubble key={message.id} text={message.text} time={time} otherUser={otherUser} />
+          <OtherUserBubble isLastMessage={isLastMessage} setRef={setRef} key={index} text={message.text} time={time} otherUser={otherUser} />
         );
       })}
     </Box>

@@ -11,7 +11,8 @@ import socket from "../socket";
 
 const styles = {
   root: {
-    height: "97vh",
+    height: "95vh",
+    maxHeight: "95vh"
   },
 };
 

@@ -45,9 +45,9 @@ const useStyles = makeStyles(() => ({
 
 const SenderBubble = (props) => {
   const classes = useStyles();
-  const { time, text, lastSentReadMessage, messageId, otherUser } = props;
+  const { time, text, lastSentReadMessage, messageId, otherUser, isLastMessage, setRef } = props;
   return (
-    <Box className={classes.root}>
+    <Box ref={isLastMessage ? setRef : null} className={classes.root}>
       <Typography className={classes.date}>{time}</Typography>
       <Box className={classes.bubble}>
         <Typography className={classes.text}>{text}</Typography>
