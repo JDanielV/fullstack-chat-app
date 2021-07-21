@@ -22,7 +22,6 @@ const Messages = (props) => {
 
   const setRef = useCallback(node => {
     if (node) {
-      console.log("NODE!!", node);
       node.scrollIntoView({ smooth: true })
     }
   }, [])
