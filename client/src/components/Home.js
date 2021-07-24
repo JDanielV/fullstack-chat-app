@@ -29,26 +29,13 @@ class Home extends Component {
         isLoggedIn: true,
       });
     }
-
-    // Updates the list of rooms to join if the number of convos
-    // changes (in case there's a new conversation)
-    if (this.props.conversations.length !== prevProps.conversations.length) {
-      const conversationIds = this.props.conversations.map((convo => convo.id));
-      socket.emit("join-rooms", {
-        rooms: [...conversationIds, this.props.user.username]
-      });
-    }
   }
 
   componentDidMount() {
     this.props.fetchConversations();
 
-    // Joins the room of each existing conversation (for better
-    // performance and security in both client & server)
-    const conversationIds = this.props.conversations.map((convo => convo.id));
-    socket.emit("join-rooms", {
-      rooms: [...conversationIds, this.props.user.username]
-    });
+    // Joins a room with the ID of the user's ID
+    socket.emit("join-room", this.props.user.id);
   }
 
   handleLogout = async () => {

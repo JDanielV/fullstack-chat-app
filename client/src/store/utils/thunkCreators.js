@@ -99,7 +99,7 @@ const sendMessage = (data, body) => {
     message: data.message,
     recipientId: body.recipientId,
     sender: data.sender,
-  }, body.conversationId ? body.conversationId : body.recipientUsername);
+  });
 };
 
 // message format to send: {recipientId, text, conversationId}
