@@ -25,6 +25,8 @@ class Chat extends Component {
     await this.props.setActiveChat(conversation.otherUser.username);
   };
 
+
+
   render() {
     const { classes } = this.props;
     const otherUser = this.props.conversation.otherUser;

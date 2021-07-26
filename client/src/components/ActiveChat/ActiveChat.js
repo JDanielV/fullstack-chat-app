@@ -4,6 +4,7 @@ import { Box } from "@material-ui/core";
 import { Input, Header, Messages } from "./index";
 import { connect } from "react-redux";
 import { updateStoreMessages, fetchConversations } from "../../store/utils/thunkCreators";
+import socket from "../../socket";
 
 
 const useStyles = makeStyles(() => ({
@@ -31,6 +32,7 @@ const ActiveChat = (props) => {
   useEffect(() => {
     previousActiveConvoRef.current = conversation;
   });
+
   const previousActiveConvo = previousActiveConvoRef.current;
 
   // Finds and updates unread messages in current and previous active conversations. 
@@ -55,6 +57,16 @@ const ActiveChat = (props) => {
     fetchConversations();
   }, [conversation.id, user.id])
 
+  useEffect(() => {
+    if (conversation.messages && conversation.messages.length > 0 &&
+      conversation.messages[conversation.messages.length - 1].senderId !==
+      user.id) {
+      socket.emit("update-read-message", {
+        ...conversation.messages[conversation.messages.length - 1]
+      });
+    }
+  }, [conversation])
+
 
   return (
     <Box className={classes.root}>
@@ -69,6 +81,7 @@ const ActiveChat = (props) => {
               messages={conversation.messages}
               otherUser={conversation.otherUser}
               userId={user.id}
+              conversationId={conversation.id}
             />
             <Input
               otherUser={conversation.otherUser}
