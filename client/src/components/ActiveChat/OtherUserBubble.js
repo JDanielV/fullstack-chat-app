@@ -33,9 +33,9 @@ const useStyles = makeStyles(() => ({
 
 const OtherUserBubble = (props) => {
   const classes = useStyles();
-  const { text, time, otherUser } = props;
+  const { text, time, otherUser, isLastMessage, setRef } = props;
   return (
-    <Box className={classes.root}>
+    <Box ref={isLastMessage ? setRef : null} className={classes.root}>
       <Avatar alt={otherUser.username} src={otherUser.photoUrl} className={classes.avatar}></Avatar>
       <Box>
         <Typography className={classes.usernameDate}>
