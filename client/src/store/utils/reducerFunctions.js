@@ -18,12 +18,31 @@ export const addMessageToStore = (state, payload) => {
       convoCopy.messages.push(message);
       convoCopy.latestMessageText = message.text;
 
+      if (convoCopy.otherUser.id === message.senderId) {
+        if (!convoCopy.unreadMessagesCount)
+          convoCopy.unreadMessagesCount = 1;
+        else
+          convoCopy.unreadMessagesCount += 1;
+      }
       return convoCopy;
     } else {
       return convo;
     }
   });
 };
+
+export const updateReadMessagesInStore = (state, message) => {
+  return state.map((convo) => {
+    if (convo.id === message.conversationId) {
+      const convoCopy = { ...convo };
+      const index = convoCopy.messages.findIndex((msg) => { return msg.id === message.id })
+      convoCopy.messages[index].readByRecipient = message.readByRecipient;
+      return convoCopy;
+    } else {
+      return convo;
+    }
+  })
+}
 
 export const addOnlineUserToStore = (state, id) => {
   return state.map((convo) => {

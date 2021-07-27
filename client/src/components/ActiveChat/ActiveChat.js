@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Box } from "@material-ui/core";
 import { Input, Header, Messages } from "./index";
 import { connect } from "react-redux";
+import { updateStoreMessages, fetchConversations } from "../../store/utils/thunkCreators";
+import socket from "../../socket";
+
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -22,8 +25,48 @@ const useStyles = makeStyles(() => ({
 
 const ActiveChat = (props) => {
   const classes = useStyles();
-  const { user } = props;
+  const { user, fetchConversations } = props;
   const conversation = props.conversation || {};
+  const previousActiveConvoRef = useRef();
+
+  useEffect(() => {
+    previousActiveConvoRef.current = conversation;
+  });
+
+  const previousActiveConvo = previousActiveConvoRef.current;
+
+  // Finds and updates unread messages in current and previous active conversations. 
+  // If any found, it updates all unread messages as READ in both convos.
+  const findAndUpdateUnreadMessages = () => {
+    const unreadMessage = conversation.messages.find(message => !message.readByRecipient && message.senderId !== user.id);
+    const previousConvoUnreadMessage = previousActiveConvo && previousActiveConvo.messages ?
+      previousActiveConvo.messages.find(message => !message.readByRecipient && message.senderId !== user.id) : null;
+
+    if (unreadMessage || previousConvoUnreadMessage) {
+      const arrayOfConvoIds = [];
+      unreadMessage && arrayOfConvoIds.push(unreadMessage.conversationId);
+      previousConvoUnreadMessage && arrayOfConvoIds.push(previousConvoUnreadMessage.conversationId);
+      props.updateStoreMessages(arrayOfConvoIds);
+    }
+  }
+
+  useEffect(() => {
+    if (conversation.messages) {
+      findAndUpdateUnreadMessages();
+    }
+    fetchConversations();
+  }, [conversation.id, user.id])
+
+  useEffect(() => {
+    if (conversation.messages && conversation.messages.length > 0 &&
+      conversation.messages[conversation.messages.length - 1].senderId !==
+      user.id) {
+      socket.emit("update-read-message", {
+        ...conversation.messages[conversation.messages.length - 1]
+      });
+    }
+  }, [conversation])
+
 
   return (
     <Box className={classes.root}>
@@ -38,6 +81,7 @@ const ActiveChat = (props) => {
               messages={conversation.messages}
               otherUser={conversation.otherUser}
               userId={user.id}
+              conversationId={conversation.id}
             />
             <Input
               otherUser={conversation.otherUser}
@@ -62,4 +106,15 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, null)(ActiveChat);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    updateStoreMessages: (message) => {
+      dispatch(updateStoreMessages(message));
+    },
+    fetchConversations: () => {
+      dispatch(fetchConversations());
+    },
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps, null)(ActiveChat);

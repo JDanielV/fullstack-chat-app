@@ -7,6 +7,7 @@ import { SidebarContainer } from "./Sidebar";
 import { ActiveChat } from "./ActiveChat";
 import { logout, fetchConversations } from "../store/utils/thunkCreators";
 import { clearOnLogout } from "../store/index";
+import socket from "../socket";
 
 const styles = {
   root: {
@@ -32,6 +33,9 @@ class Home extends Component {
 
   componentDidMount() {
     this.props.fetchConversations();
+
+    // Joins a room with the ID of the user's ID
+    socket.emit("join-room", this.props.user.id);
   }
 
   handleLogout = async () => {

@@ -5,6 +5,7 @@ import {
   addConversation,
   setNewMessage,
   setSearchedUsers,
+  updateMessagesToRead
 } from "../conversations";
 import { gotUser, setFetchingStatus } from "../user";
 
@@ -83,6 +84,16 @@ const saveMessage = async (body) => {
   return data;
 };
 
+// message format to send (to update existing message): {recipientId, text, conversationId, readByRecipient}
+const updateMessage = async (body) => {
+  const { data } = await axios.put("/api/messages/update", body);
+
+  return data;
+}
+
+// Emits the new message along with the conversation ID to be used as the room ID in the socket. 
+// If new convo for the receiver, it sends the message to a room with ID
+// of the recepients' username, which the recipient already has joined by default. 
 const sendMessage = (data, body) => {
   socket.emit("new-message", {
     message: data.message,
@@ -108,6 +119,16 @@ export const postMessage = (body) => async (dispatch) => {
     console.error(error);
   }
 };
+
+export const updateStoreMessages = (body) => async (dispatch) => {
+  try {
+    const data = await updateMessage(body);
+
+    dispatch(updateMessagesToRead(data));
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 export const searchUsers = (searchTerm) => async (dispatch) => {
   try {
